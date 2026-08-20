@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>우리 함께! 보드게임 기록장</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+        body {
+            font-family: 'Gowun Dodum', sans-serif;
+            background-color: #f0f8ff; 
+            color: #333;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #intro-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            background: linear-gradient(135deg, #e0f7fa 0%, #b3e5fc 100%);
+        }
+
+        #intro-screen h1 {
+            color: #0277bd;
+            font-size: 36px;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(2, 119, 189, 0.2);
+        }
+
+        #main-screen {
+            display: none;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            color: #0288d1;
+            border-bottom: 2px dashed #81d4fa;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background-color: #4fc3f7;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            box-shadow: 0 4px 6px rgba(79, 195, 247, 0.3);
+        }
+        .btn:hover { background-color: #03a9f4; transform: translateY(-2px); }
+        
+        .add-btn {
+            background-color: #81d4fa;
+            width: 100%;
+            margin-top: 15px;
+            color: #01579b;
+            font-weight: bold;
+        }
+
+        .record-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 2px solid #e1f5fe;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-item {
+            flex: 1;
+            min-width: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-item label {
+            font-size: 13px;
+            color: #0277bd;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .input-item input {
+            padding: 8px;
+            border: 1px solid #b3e5fc;
+            border-radius: 8px;
+            font-family: inherit;
+            outline: none;
+        }
+        .input-item input:focus { border-color: #03a9f4; }
+
+        .star-rating {
+            display: flex;
+            gap: 5px;
+            font-size: 24px;
+            color: #ccc;
+            cursor: pointer;
+            justify-content: center;
+            margin: 10px 0;
+        }
+        .star-rating .star.active { color: #ffeb3b; text-shadow: 0 0 2px #f57f17; }
+
+        .photo-area {
+            text-align: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed #e1f5fe;
+        }
+        
+        .photo-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .photo-btn {
+            background-color: #e1f5fe;
+            color: #0288d1;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+        .photo-btn:hover { background-color: #b3e5fc; }
+
+        .delete-btn {
+            background-color: #ffcdd2;
+            color: #c62828;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            cursor: pointer;
+            float: right;
+            margin-top: -5px;
+        }
+
+        .wish-item {
+            display: flex;
+            gap: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e1f5fe;
+        }
+        .wish-item input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 16px;
+        }
+        
+        .save-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 화면 1: 입장 화면 -->
+    <div id="intro-screen">
+        <h1>🎲 우리 함께!</h1>
+        <button class="btn" onclick="enterMain()">입장하기</button>
+    </div>
+
+    <!-- 화면 2: 메인 기록 화면 -->
+    <div id="main-screen">
+        
+        <section>
+            <h2>💙 우리의 보드게임 기록</h2>
+            <div id="record-container"></div>
+            <button class="btn add-btn" onclick="addLocalRecordCard()">+ 새로운 기록 카드 만들기</button>
+        </section>
+
+        <section style="margin-top: 50px;">
+            <h2>📝 다음에 하고 싶은 게임</h2>
+            <div id="wish-container"></div>
+            <div class="wish-item">
+                <input type="text" id="new-wish-input" placeholder="하고 싶은 게임을 적어주세요!">
+                <button class="btn" style="padding: 5px 15px;" onclick="saveWishToServer()">추가</button>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // ⚠️ [매우 중요] 외부 공인 IP 주소로 꼭 변경하세요! ⚠️
+        // 예시: const API_BASE_URL = "http://211.123.45.67:8000/api";
+        const API_BASE_URL = "http://121.138.179.130:8000/api";
+
+        function enterMain() {
+            document.getElementById('intro-screen').style.display = 'none';
+            document.getElementById('main-screen').style.display = 'block';
+            loadDataFromServer();
+        }
+
+        // --- 1. 서버에서 데이터 불러오기 ---
+        async function loadDataFromServer() {
+            try {
+                // 기록 불러오기
+                const recRes = await fetch(`${API_BASE_URL}/records`);
+                const records = await recRes.json();
+                renderRecords(records);
+                
+                // 위시리스트 불러오기
+                const wishRes = await fetch(`${API_BASE_URL}/wishes`);
+                const wishes = await wishRes.json();
+                renderWishes(wishes);
+            } catch (error) {
+                console.error("서버 연결 실패", error);
+                alert("서버와 연결할 수 없습니다. IP 주소나 방화벽 설정을 확인해주세요.");
+            }
+        }
+
+        // --- 2. 기록 기능 ---
+        // 화면에 빈 입력 카드 만들기 (저장 전)
+        function addLocalRecordCard() {
+            const container = document.getElementById('record-container');
+            const tempId = 'temp_' + Date.now();
+            
+            const card = document.createElement('div');
+            card.className = 'record-card';
+            card.id = tempId;
+            card.innerHTML = `
+                <div class="input-group">
+                    <div class="input-item">
+                        <label>함께한 날짜</label>
+                        <input type="date" id="date_${tempId}">
+                    </div>
+                    <div class="input-item">
+                        <label>장소</label>
+                        <input type="text" id="loc_${tempId}" placeholder="예: 홍대 보드게임카페">
+                    </div>
+                </div>
+                <div class="input-item" style="margin-bottom: 15px;">
+                    <label>게임 이름</label>
+                    <input type="text" id="name_${tempId}" placeholder="예: 투 매니 본즈">
+                </div>
+                
+                <div style="text-align:center; font-size:13px; font-weight:bold; color:#0277bd;">우리의 평점 (1~5 입력)</div>
+                <input type="number" id="rating_${tempId}" min="1" max="5" value="5" style="width:100%; text-align:center; padding:8px; border-radius:8px; border:1px solid #b3e5fc;">
+                
+                <div class="photo-area">
+                    <input type="file" id="file_${tempId}" accept="image/*">
+                </div>
+                <button class="save-btn" onclick="saveRecordToServer('${tempId}')">이 기록 서버에 저장하기 💾</button>
+            `;
+            // 새 카드를 맨 위에 추가
+            container.insertBefore(card, container.firstChild);
+        }
+
+        // 이미지 압축 (이전과 동일)
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = event => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.7));
+                }
+            }
+        }
+
+        // 서버로 새 기록 전송
+        async function saveRecordToServer(tempId) {
+            const dateVal = document.getElementById(`date_${tempId}`).value;
+            const nameVal = document.getElementById(`name_${tempId}`).value;
+            const locVal = document.getElementById(`loc_${tempId}`).value;
+            const ratingVal = parseInt(document.getElementById(`rating_${tempId}`).value);
+            const fileInput = document.getElementById(`file_${tempId}`);
+            
+            if(!nameVal) {
+                alert("게임 이름은 꼭 적어주세요!"); return;
+            }
+
+            const sendData = async (photoDataStr) => {
+                const recordData = {
+                    play_date: dateVal,
+                    name: nameVal,
+                    location: locVal,
+                    rating: ratingVal,
+                    photo_data: photoDataStr
+                };
+
+                try {
+                    const res = await fetch(`${API_BASE_URL}/records`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(recordData)
+                    });
+                    if(res.ok) {
+                        loadDataFromServer(); // 저장 완료 후 화면 갱신
+                    }
+                } catch (e) {
+                    alert("서버 저장 실패!");
+                }
+            };
+
+            // 사진이 있으면 압축해서, 없으면 null로 전송
+            if(fileInput.files.length > 0) {
+                compressImage(fileInput.files[0], (compressed) => {
+                    sendData(compressed);
+                });
+            } else {
+                sendData(null);
+            }
+        }
+
+        // 서버에 있는 기록 지우기
+        async function deleteRecordFromServer(id) {
+            if(confirm("정말 이 기록을 삭제할까요?")) {
+                try {
+                    await fetch(`${API_BASE_URL}/records/${id}`, { method: 'DELETE' });
+                    loadDataFromServer();
+                } catch (e) { alert("삭제 실패!"); }
+            }
+        }
+
+        // 불러온 기록들을 화면에 그리기
+        function renderRecords(records) {
+            const container = document.getElementById('record-container');
+            container.innerHTML = '';
+
+            records.forEach(record => {
+                const card = document.createElement('div');
+                card.className = 'record-card';
+                
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHtml += `<span class="star ${i <= record.rating ? 'active' : ''}">★</span>`;
+                }
+
+                let photoHtml = '';
+                if (record.photo_data) {
+                    photoHtml = `<img src="${record.photo_data}" class="photo-preview" style="display:block;">`;
+                }
+
+                card.innerHTML = `
+                    <button class="delete-btn" onclick="deleteRecordFromServer(${record.id})">삭제</button>
+                    <div style="font-size:12px; color:#888;">${record.play_date || '날짜 미상'}</div>
+                    <h3 style="margin:5px 0; color:#0288d1;">${record.name}</h3>
+                    <div style="font-size:14px; color:#555;">📍 ${record.location || '장소 미상'}</div>
+                    <div class="star-rating" style="justify-content:flex-start;">${starsHtml}</div>
+                    <div class="photo-area">${photoHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+
+        // --- 3. 위시리스트 기능 ---
+        async function saveWishToServer() {
+            const input = document.getElementById('new-wish-input');
+            const nameVal = input.value;
+            if(!nameVal) return;
+
+            try {
+                await fetch(`${API_BASE_URL}/wishes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: nameVal })
+                });
+                input.value = '';
+                loadDataFromServer();
+            } catch (e) { alert("위시리스트 저장 실패!"); }
+        }
+
+        async function deleteWishFromServer(id) {
+            try {
+                await fetch(`${API_BASE_URL}/wishes/${id}`, { method: 'DELETE' });
+                loadDataFromServer();
+            } catch (e) { alert("위시리스트 삭제 실패!"); }
+        }
+
+        function renderWishes(wishes) {
+            const container = document.getElementById('wish-container');
+            container.innerHTML = '';
+
+            wishes.forEach(wish => {
+                const div = document.createElement('div');
+                div.className = 'wish-item';
+                div.innerHTML = `
+                    <div style="flex:1; font-size:16px;">${wish.name}</div>
+                    <button class="delete-btn" style="margin:0;" onclick="deleteWishFromServer(${wish.id})">완료/삭제</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>
