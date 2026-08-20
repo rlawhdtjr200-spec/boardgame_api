@@ -203,9 +203,9 @@
     <div id="main-screen">
         
         <section>
-            <h2>💙 우리의 보드게임 기록</h2>
+            <h2>💙 우리의 보드게임 추억</h2>
             <div id="record-container"></div>
-            <button class="btn add-btn" onclick="addLocalRecordCard()">+ 새로운 기록 카드 만들기</button>
+            <button class="btn add-btn" onclick="addLocalRecordCard()">+ 새로운 추억 카드 만들기</button>
         </section>
 
         <section style="margin-top: 50px;">
@@ -357,7 +357,7 @@
 
         // 서버에 있는 기록 지우기
         async function deleteRecordFromServer(id) {
-            if(confirm("정말 이 기록을 삭제할까요?")) {
+            if(confirm("정말 이 추억을 삭제할까요?")) {
                 try {
                     await fetch(`${API_BASE_URL}/records/${id}`, { method: 'DELETE' });
                     loadDataFromServer();
