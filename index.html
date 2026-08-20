@@ -220,11 +220,9 @@
     </div>
 
     <script>
-        // ⚠️ [매우 중요] 외부 공인 IP 주소로 꼭 변경하세요! ⚠️
-        // 예시: const API_BASE_URL = "http://211.123.45.67:8000/api";
-        // const API_BASE_URL = "http://121.138.179.130:8000/api";
+        // ngrok 터널링 주소 (끝에 포트번호 없음)
         const API_BASE_URL = "https://ambulance-award-tamper.ngrok-free.dev/api";
-        
+
         function enterMain() {
             document.getElementById('intro-screen').style.display = 'none';
             document.getElementById('main-screen').style.display = 'block';
@@ -234,23 +232,26 @@
         // --- 1. 서버에서 데이터 불러오기 ---
         async function loadDataFromServer() {
             try {
-                // 기록 불러오기
-                const recRes = await fetch(`${API_BASE_URL}/records`);
+                // 기록 불러오기 (프리패스 헤더 추가)
+                const recRes = await fetch(`${API_BASE_URL}/records`, {
+                    headers: { 'ngrok-skip-browser-warning': '69420' }
+                });
                 const records = await recRes.json();
                 renderRecords(records);
                 
-                // 위시리스트 불러오기
-                const wishRes = await fetch(`${API_BASE_URL}/wishes`);
+                // 위시리스트 불러오기 (프리패스 헤더 추가)
+                const wishRes = await fetch(`${API_BASE_URL}/wishes`, {
+                    headers: { 'ngrok-skip-browser-warning': '69420' }
+                });
                 const wishes = await wishRes.json();
                 renderWishes(wishes);
             } catch (error) {
                 console.error("서버 연결 실패", error);
-                alert("서버와 연결할 수 없습니다. IP 주소나 방화벽 설정을 확인해주세요.");
+                alert("서버와 연결할 수 없습니다. 데이터 로딩에 실패했습니다.");
             }
         }
 
         // --- 2. 기록 기능 ---
-        // 화면에 빈 입력 카드 만들기 (저장 전)
         function addLocalRecordCard() {
             const container = document.getElementById('record-container');
             const tempId = 'temp_' + Date.now();
@@ -282,11 +283,10 @@
                 </div>
                 <button class="save-btn" onclick="saveRecordToServer('${tempId}')"> 추억에 저장하기 💾</button>
             `;
-            // 새 카드를 맨 위에 추가
             container.insertBefore(card, container.firstChild);
         }
 
-        // 이미지 압축 (이전과 동일)
+        // 이미지 압축
         function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
@@ -335,18 +335,20 @@
                 try {
                     const res = await fetch(`${API_BASE_URL}/records`, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'ngrok-skip-browser-warning': '69420' // 프리패스 헤더 추가
+                        },
                         body: JSON.stringify(recordData)
                     });
                     if(res.ok) {
-                        loadDataFromServer(); // 저장 완료 후 화면 갱신
+                        loadDataFromServer(); 
                     }
                 } catch (e) {
-                    alert("서버 저장 실패!");
+                    alert("추억 저장 실패!");
                 }
             };
 
-            // 사진이 있으면 압축해서, 없으면 null로 전송
             if(fileInput.files.length > 0) {
                 compressImage(fileInput.files[0], (compressed) => {
                     sendData(compressed);
@@ -360,13 +362,15 @@
         async function deleteRecordFromServer(id) {
             if(confirm("정말 이 추억을 삭제할까요?")) {
                 try {
-                    await fetch(`${API_BASE_URL}/records/${id}`, { method: 'DELETE' });
+                    await fetch(`${API_BASE_URL}/records/${id}`, { 
+                        method: 'DELETE',
+                        headers: { 'ngrok-skip-browser-warning': '69420' } // 프리패스 헤더 추가
+                    });
                     loadDataFromServer();
                 } catch (e) { alert("삭제 실패!"); }
             }
         }
 
-        // 불러온 기록들을 화면에 그리기
         function renderRecords(records) {
             const container = document.getElementById('record-container');
             container.innerHTML = '';
@@ -407,7 +411,10 @@
             try {
                 await fetch(`${API_BASE_URL}/wishes`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'ngrok-skip-browser-warning': '69420' // 프리패스 헤더 추가
+                    },
                     body: JSON.stringify({ name: nameVal })
                 });
                 input.value = '';
@@ -417,7 +424,10 @@
 
         async function deleteWishFromServer(id) {
             try {
-                await fetch(`${API_BASE_URL}/wishes/${id}`, { method: 'DELETE' });
+                await fetch(`${API_BASE_URL}/wishes/${id}`, { 
+                    method: 'DELETE',
+                    headers: { 'ngrok-skip-browser-warning': '69420' } // 프리패스 헤더 추가
+                });
                 loadDataFromServer();
             } catch (e) { alert("위시리스트 삭제 실패!"); }
         }
