@@ -6,6 +6,7 @@
     <title>💙 우리의 보드게임 추억</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
     <style>
         :root { 
@@ -26,14 +27,42 @@
             display: flex; flex-direction: column;
         }
 
+        /* ✨ 최상단 탭(Tab) 메뉴 스타일링 */
+        .top-tabs {
+            display: flex;
+            background: var(--header-bg);
+            padding: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 60;
+        }
+        .top-tabs .tab-btn {
+            flex: 1;
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            border: none;
+            padding: 18px 0;
+            font-size: 16px;
+            font-weight: 900;
+            cursor: pointer;
+            border-bottom: 4px solid transparent;
+            transition: 0.3s;
+        }
+        .top-tabs .tab-btn.active {
+            color: white;
+            border-bottom: 4px solid white;
+        }
+
+        /* ✨ 캘린더 네비게이션 영역 */
         .calendar-header {
             background-color: var(--header-bg);
-            padding: 20px 10px;
+            padding: 15px 10px 20px 10px;
             color: white;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: sticky;
-            top: 0;
+            top: 55px; /* 탭 메뉴 바로 아래 붙도록 */
             z-index: 50;
         }
         .cal-month-title {
@@ -41,7 +70,16 @@
             font-weight: bold;
             margin-bottom: 15px;
             letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 5px 15px;
+            border-radius: 20px;
+            transition: 0.2s;
         }
+        .cal-month-title:hover { background: rgba(255,255,255,0.1); }
+        
         .date-strip {
             display: flex;
             overflow-x: auto;
@@ -121,58 +159,33 @@
         .stars { color: #e0e0e0; font-size: 20px; letter-spacing: 2px; }
         .stars .filled { color: var(--star-color); }
         
-        /* ✨ 수정/삭제 버튼 그룹 스타일링 */
-        .action-btns {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            gap: 6px;
-        }
-        .btn-edit, .btn-delete {
-            border: none;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        .action-btns { position: absolute; top: 20px; right: 20px; display: flex; gap: 6px; }
+        .btn-edit, .btn-delete { border: none; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-edit { background: #e3f2fd; color: #1976d2; }
         .btn-delete { background: #ffcdd2; color: #c62828; }
         .btn-edit:hover { background: #bbdefb; }
         .btn-delete:hover { background: #ef9a9a; }
 
-        /* ✨ 카드 내 메모 스타일 */
-        .g-memo { 
-            background: #f9f9f9; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-size: 13px; 
-            color: #555; 
-            margin-top: 15px; 
-            line-height: 1.5; 
-            font-weight: bold;
-            border: 1px solid #f0f0f0;
-        }
+        .g-memo { background: #f9f9f9; padding: 12px; border-radius: 8px; font-size: 13px; color: #555; margin-top: 15px; line-height: 1.5; font-weight: bold; border: 1px solid #f0f0f0; }
 
         .empty-state { text-align: center; padding: 50px 0; color: #888; font-weight: bold; }
 
+        /* ✨ 투명도를 팍 낮춘 하단 플로팅 버튼 (뒤가 훤히 비치도록 rgba 조정) */
         .fab-add { 
             position: fixed; 
             bottom: 30px; 
             left: 50%; 
             transform: translateX(-50%); 
-            background: rgba(40, 53, 147, 0.85); 
-            backdrop-filter: blur(6px); 
-            -webkit-backdrop-filter: blur(6px);
+            background: rgba(33, 150, 243, 0.4); /* 투명도를 0.4로 대폭 낮춤 */
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
             color: white; 
-            border: none; 
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 14px 28px; 
             border-radius: 30px; 
             font-size: 16px; 
             font-weight: 900; 
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); 
             cursor: pointer; 
             transition: 0.2s; 
             display: flex; 
@@ -181,8 +194,9 @@
             white-space: nowrap;
             z-index: 100;
         }
-        .fab-add:hover { background: rgba(40, 53, 147, 0.95); transform: translateX(-50%) scale(1.05); }
+        .fab-add:hover { background: rgba(33, 150, 243, 0.6); transform: translateX(-50%) scale(1.05); }
 
+        /* 모달 팝업 공통 스타일 */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; position: relative; animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -193,7 +207,7 @@
         .input-box { margin-bottom: 15px; }
         .input-box input, .input-box textarea { width: 100%; background: #f5f7f9; border: 1px solid #eef0f2; border-radius: 12px; padding: 14px 15px; font-size: 14px; font-weight: bold; outline: none; font-family: inherit;}
         .input-box input:focus, .input-box textarea:focus { border-color: var(--primary); background: white; }
-        .input-box textarea { resize: none; height: 80px; } /* 메모용 높이 설정 */
+        .input-box textarea { resize: none; height: 80px; } 
         
         .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; margin-bottom: 20px; }
         .star-rating input { display: none; }
@@ -202,52 +216,74 @@
         .star-rating label:hover, .star-rating label:hover ~ label { color: var(--star-color); }
 
         .btn-submit { width: 100%; background: var(--header-bg); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(92, 107, 192, 0.3);}
+        
+        /* 캘린더 팝업 예쁘게 꾸미기 */
+        .flatpickr-calendar { border-radius: 20px !important; border: none !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; padding: 10px !important; font-family: 'Malgun Gothic', sans-serif !important; z-index: 10005 !important; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div class="calendar-header">
-        <div class="cal-month-title" id="cal-month-display">2026.09</div>
-        <div class="date-strip" id="date-strip-container">
-            <!-- 자바스크립트로 날짜 카드가 동적으로 들어갑니다 -->
+    
+    <!-- ✨ 최상단 네비게이션 탭 -->
+    <div class="top-tabs">
+        <button class="tab-btn active" id="tab-btn-history" onclick="switchTab('history')">🎮 플레이 기록</button>
+        <button class="tab-btn" id="tab-btn-wishlist" onclick="switchTab('wishlist')">🛒 위시리스트</button>
+    </div>
+
+    <!-- 🎮 [화면 1] 플레이 기록(히스토리) 뷰 -->
+    <div id="view-history">
+        <div class="calendar-header">
+            <!-- ✨ 클릭 시 월간 달력(Flatpickr) 팝업 열림 -->
+            <div class="cal-month-title" id="cal-month-display" onclick="openMonthPicker()">
+                2026.09 <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">calendar_month</span>
+            </div>
+            <!-- 달력 팝업용 숨김 인풋 -->
+            <input type="text" id="hidden-month-picker" style="position:absolute; top:-9999px; left:-9999px; opacity:0;">
+            
+            <div class="date-strip" id="date-strip-container">
+                <!-- 날짜 카드 동적 생성 -->
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="page-title">
+                <span style="color:#2196F3;">💙</span> 우리의 보드게임 추억
+            </div>
+            <div class="game-list" id="game-list-container">
+                <!-- 날짜별 게임 리스트 동적 생성 -->
+            </div>
         </div>
     </div>
 
-    <div class="main-content">
-        <div class="page-title">
-            <span style="color:#2196F3;">💙</span> 우리의 보드게임 추억
-        </div>
-        <div class="game-list" id="game-list-container">
-            <!-- 선택된 날짜의 게임 카드가 들어갑니다 -->
+    <!-- 🛒 [화면 2] 위시리스트 뷰 -->
+    <div id="view-wishlist" style="display:none;">
+        <div class="main-content" style="padding-top: 30px;">
+            <div class="page-title" style="color:#ff9800; border-bottom: 2px dashed #ffe0b2;">
+                <span>⭐</span> 꼭 같이 해보고 싶은 게임
+            </div>
+            <div class="game-list" id="wish-list-container">
+                <!-- 위시리스트 카드 동적 생성 -->
+            </div>
         </div>
     </div>
 
-    <button class="fab-add" onclick="openAddModal()">
-        <span style="font-size: 18px;">📝</span> <span>뭐 하고 싶어?</span>
+    <!-- ✨ 투명한 통합 플로팅 추가 버튼 -->
+    <button class="fab-add" id="main-fab" onclick="openFabModal()">
+        <span style="font-size: 18px;">📝</span> <span>기록 추가</span>
     </button>
 </div>
 
-<!-- ✨ 카드 추가 및 수정 팝업 (모달) -->
-<div id="add-modal" class="modal-overlay" onclick="closeModal(event)">
+<!-- 🎮 플레이 기록 추가/수정 모달 -->
+<div id="add-history-modal" class="modal-overlay" onclick="closeModal(event, 'add-history-modal')">
     <div class="modal-content" onclick="event.stopPropagation()">
-        <button class="modal-close" onclick="document.getElementById('add-modal').style.display='none'">&times;</button>
-        <h2 class="modal-title" id="modal-title-text">새로운 보드게임 기록!</h2>
+        <button class="modal-close" onclick="document.getElementById('add-history-modal').style.display='none'">&times;</button>
+        <h2 class="modal-title" id="history-modal-title">새로운 보드게임 기록!</h2>
         
-        <div class="input-box">
-            <input type="date" id="g-date" required>
-        </div>
-        <div class="input-box">
-            <input type="text" id="g-title" placeholder="게임 이름 (예: 스컬킹)" required>
-        </div>
-        <div class="input-box">
-            <input type="text" id="g-loc" placeholder="장소 (예: 모란 히어로)" required>
-        </div>
-        
-        <!-- ✨ 메모 입력 영역 추가 -->
-        <div class="input-box">
-            <textarea id="g-memo" placeholder="이 날의 기억을 짧게 남겨볼까? (선택)"></textarea>
-        </div>
+        <div class="input-box"><input type="date" id="g-date" required></div>
+        <div class="input-box"><input type="text" id="g-title" placeholder="게임 이름 (예: 스컬킹)" required></div>
+        <div class="input-box"><input type="text" id="g-loc" placeholder="장소 (예: 모란 히어로)" required></div>
+        <div class="input-box"><textarea id="g-memo" placeholder="이 날의 기억을 짧게 남겨볼까? (선택)"></textarea></div>
         
         <div style="text-align: center; font-size: 13px; color: #888; font-weight: bold; margin-bottom: 5px;">우리의 평점은?</div>
         <div class="star-rating">
@@ -258,44 +294,122 @@
             <input type="radio" id="star1" name="rating" value="1" checked><label for="star1">★</label>
         </div>
 
-        <button class="btn-submit" id="btn-save-submit" onclick="saveGame()">저장하기</button>
+        <button class="btn-submit" id="btn-history-save" onclick="saveHistoryGame()">저장하기</button>
     </div>
 </div>
 
+<!-- 🛒 위시리스트 추가/수정 모달 -->
+<div id="add-wish-modal" class="modal-overlay" onclick="closeModal(event, 'add-wish-modal')">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <button class="modal-close" onclick="document.getElementById('add-wish-modal').style.display='none'">&times;</button>
+        <h2 class="modal-title" id="wish-modal-title" style="color: #ff9800;">위시리스트 추가!</h2>
+        
+        <div class="input-box"><input type="text" id="w-title" placeholder="해보고 싶은 게임 이름" required></div>
+        <div class="input-box"><textarea id="w-memo" placeholder="왜 하고 싶어? (기대평 등)"></textarea></div>
+
+        <button class="btn-submit" id="btn-wish-save" style="background: #ff9800; box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);" onclick="saveWishGame()">저장하기</button>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+
 <script>
+    // === 1. 상태 및 데이터 초기화 ===
+    let currentTab = 'history'; // 'history' or 'wishlist'
+    let selectedDateStr = '2026-09-17'; 
+    let editHistoryId = null;
+    let editWishId = null;
+
     let games = [
         { id: 1, date: '2026-09-17', title: '스컬킹', location: '모란 히어로', rating: 5, memo: '민지가 0승 선언하고 다 틀린 전설의 날 ㅋㅋㅋ' },
-        { id: 2, date: '2026-09-17', title: '더 게임', location: '모란 히어로', rating: 4, memo: '' },
-        { id: 3, date: '2026-09-17', title: '더 마인드', location: '모란 히어로', rating: 5, memo: '눈빛으로 텔레파시 완벽하게 통함 😎' },
-        { id: 4, date: '2026-09-17', title: '스파이시', location: '모란 히어로', rating: 4, memo: '' },
-        { id: 5, date: '2026-09-13', title: '의자 사다리 세우기', location: '야탑 홈즈앤루팡', rating: 3, memo: '' },
-        { id: 6, date: '2026-09-13', title: '요트다이스', location: '야탑 홈즈앤루팡', rating: 4, memo: '' },
-        { id: 7, date: '2026-09-13', title: '캐스캐디아', location: '야탑 홈즈앤루팡', rating: 3, memo: '' },
-        { id: 8, date: '2026-08-06', title: '코드네임 듀엣', location: '서현 오즈보드게임', rating: 5, memo: '' }
+        { id: 2, date: '2026-09-17', title: '더 마인드', location: '모란 히어로', rating: 5, memo: '눈빛으로 텔레파시 완벽하게 통함 😎' },
+        { id: 3, date: '2026-09-13', title: '요트다이스', location: '야탑 홈즈앤루팡', rating: 4, memo: '' }
     ];
 
+    let wishlists = [
+        { id: 101, title: '아크 노바', memo: '동물원 테마 1위 게임! 꿀잼이라던데 꼭 해보고 싶음.' },
+        { id: 102, title: '테라포밍 마스', memo: '화성 개척 명작 보드게임' }
+    ];
+
+    // LocalStorage 데이터 로드
     const savedGames = localStorage.getItem('boardgames_data');
-    if (savedGames) {
-        games = JSON.parse(savedGames);
-    }
+    if (savedGames) games = JSON.parse(savedGames);
 
-    const today = new Date('2026-09-18');
-    let selectedDateStr = '2026-09-17'; 
-    let editTargetId = null; // ✨ 수정할 게임의 ID를 기억하는 변수
+    const savedWish = localStorage.getItem('boardgames_wish_data');
+    if (savedWish) wishlists = JSON.parse(savedWish);
 
+
+    // === 2. 화면 초기화 및 탭 전환 ===
     window.onload = () => {
-        renderCalendar();
-        renderGames();
+        renderCalendarStrip();
+        renderHistoryGames();
+        renderWishlistGames();
     };
 
-    function renderCalendar() {
+    function switchTab(tab) {
+        currentTab = tab;
+        document.getElementById('tab-btn-history').classList.remove('active');
+        document.getElementById('tab-btn-wishlist').classList.remove('active');
+
+        if (tab === 'history') {
+            document.getElementById('tab-btn-history').classList.add('active');
+            document.getElementById('view-history').style.display = 'block';
+            document.getElementById('view-wishlist').style.display = 'none';
+            document.getElementById('main-fab').innerHTML = '<span style="font-size: 18px;">📝</span> <span>기록 추가</span>';
+            document.getElementById('main-fab').style.background = 'rgba(33, 150, 243, 0.4)';
+            
+            // 탭 전환 시 선택된 날짜로 스크롤 복구
+            setTimeout(() => {
+                const activeCard = document.getElementById(`cal-${selectedDateStr}`);
+                if(activeCard) activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }, 50);
+        } else {
+            document.getElementById('tab-btn-wishlist').classList.add('active');
+            document.getElementById('view-history').style.display = 'none';
+            document.getElementById('view-wishlist').style.display = 'block';
+            document.getElementById('main-fab').innerHTML = '<span style="font-size: 18px;">⭐</span> <span>위시 추가</span>';
+            document.getElementById('main-fab').style.background = 'rgba(255, 152, 0, 0.5)'; // 위시는 오렌지톤
+        }
+    }
+
+    function openFabModal() {
+        if (currentTab === 'history') {
+            openHistoryAddModal();
+        } else {
+            openWishAddModal();
+        }
+    }
+
+
+    // === 3. 월간 캘린더 팝업 (Flatpickr) 설정 ===
+    let fpMonth = flatpickr("#hidden-month-picker", {
+        locale: "ko",
+        disableMobile: "true",
+        onChange: function(selectedDates, dateStr, instance) {
+            if(selectedDates.length > 0) {
+                selectDate(dateStr);
+            }
+        }
+    });
+
+    function openMonthPicker() {
+        fpMonth.setDate(selectedDateStr);
+        fpMonth.open();
+    }
+
+
+    // === 4. 플레이 기록 (History) 로직 ===
+    function renderCalendarStrip() {
         const strip = document.getElementById('date-strip-container');
         strip.innerHTML = '';
-        
         const daysArr = ['일','월','화','수','목','금','토'];
         
-        let currDate = new Date('2026-09-10');
-        const endDate = new Date('2026-09-20');
+        let selDate = new Date(selectedDateStr);
+        let currDate = new Date(selDate);
+        currDate.setDate(currDate.getDate() - 25); // 앞뒤로 25일씩 여유롭게 생성
+        let endDate = new Date(selDate);
+        endDate.setDate(endDate.getDate() + 25);
 
         while(currDate <= endDate) {
             let yyyy = currDate.getFullYear();
@@ -307,21 +421,20 @@
             let activeCls = (dateStr === selectedDateStr) ? 'active' : '';
             
             let gameCount = games.filter(g => g.date === dateStr).length;
-            let badgeHtml = gameCount > 0 ? `<div class="game-count-badge">${gameCount}</div>` : '';
+            let badgeHtml = gameCount > 0 && !activeCls ? `<div class="game-count-badge">${gameCount}</div>` : '';
 
             let html = `
             <div class="date-card ${activeCls}" id="cal-${dateStr}" onclick="selectDate('${dateStr}')">
                 <div class="day">${dayName}</div>
                 <div class="date">${currDate.getDate()}</div>
-                ${activeCls ? '' : badgeHtml} 
+                ${badgeHtml} 
             </div>`;
             strip.insertAdjacentHTML('beforeend', html);
-            
             currDate.setDate(currDate.getDate() + 1);
         }
 
-        const selObj = new Date(selectedDateStr);
-        document.getElementById('cal-month-display').innerText = `${selObj.getFullYear()}.${String(selObj.getMonth()+1).padStart(2, '0')}`;
+        const dispObj = new Date(selectedDateStr);
+        document.getElementById('cal-month-display').innerHTML = `${dispObj.getFullYear()}.${String(dispObj.getMonth()+1).padStart(2, '0')} <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">calendar_month</span>`;
         
         setTimeout(() => {
             const activeCard = document.getElementById(`cal-${selectedDateStr}`);
@@ -331,14 +444,13 @@
 
     function selectDate(dateStr) {
         selectedDateStr = dateStr;
-        renderCalendar(); 
-        renderGames();    
+        renderCalendarStrip(); // 달력을 누른 날짜 중심으로 재배치
+        renderHistoryGames();    
     }
 
-    function renderGames() {
+    function renderHistoryGames() {
         const listDiv = document.getElementById('game-list-container');
         listDiv.innerHTML = '';
-        
         const filteredGames = games.filter(g => g.date === selectedDateStr);
 
         if (filteredGames.length === 0) {
@@ -351,18 +463,14 @@
             for(let i=1; i<=5; i++) {
                 starsHtml += `<span class="${i <= g.rating ? 'filled' : ''}">★</span>`;
             }
-
-            // ✨ 메모가 있으면 노출하도록 처리
             let memoHtml = g.memo ? `<div class="g-memo">📝 ${g.memo.replace(/\n/g, '<br>')}</div>` : '';
 
             let html = `
             <div class="game-card">
-                <!-- ✨ 수정 및 삭제 버튼 배치 -->
                 <div class="action-btns">
-                    <button class="btn-edit" onclick="openEditModal(${g.id})">수정</button>
-                    <button class="btn-delete" onclick="deleteGame(${g.id})">삭제</button>
+                    <button class="btn-edit" onclick="openHistoryEditModal(${g.id})">수정</button>
+                    <button class="btn-delete" onclick="deleteHistoryGame(${g.id})">삭제</button>
                 </div>
-                
                 <div class="g-date">${g.date}</div>
                 <div class="g-title">${g.title}</div>
                 <div class="g-loc"><span>📍</span> ${g.location}</div>
@@ -373,93 +481,136 @@
         });
     }
 
-    // ✨ 새 게임 추가 모달창 열기
-    function openAddModal() {
-        editTargetId = null; // 신규 추가 모드
-        document.getElementById('modal-title-text').innerText = '새로운 보드게임 기록!';
-        document.getElementById('btn-save-submit').innerText = '저장하기';
-        
+    function openHistoryAddModal() {
+        editHistoryId = null; 
+        document.getElementById('history-modal-title').innerText = '새로운 보드게임 기록!';
+        document.getElementById('btn-history-save').innerText = '저장하기';
         document.getElementById('g-date').value = selectedDateStr;
         document.getElementById('g-title').value = '';
         document.getElementById('g-loc').value = '';
         document.getElementById('g-memo').value = '';
         document.getElementById('star5').checked = true; 
-        
-        document.getElementById('add-modal').style.display = 'flex';
+        document.getElementById('add-history-modal').style.display = 'flex';
     }
 
-    // ✨ 기존 게임 수정 모달창 열기
-    function openEditModal(id) {
+    function openHistoryEditModal(id) {
         const game = games.find(g => g.id === id);
         if(!game) return;
-        
-        editTargetId = id; // 수정 모드
-        document.getElementById('modal-title-text').innerText = '보드게임 기록 수정';
-        document.getElementById('btn-save-submit').innerText = '수정 완료';
-        
+        editHistoryId = id; 
+        document.getElementById('history-modal-title').innerText = '보드게임 기록 수정';
+        document.getElementById('btn-history-save').innerText = '수정 완료';
         document.getElementById('g-date').value = game.date;
         document.getElementById('g-title').value = game.title;
         document.getElementById('g-loc').value = game.location;
         document.getElementById('g-memo').value = game.memo || '';
-        
-        // 해당 별점에 체크하기
         const starInput = document.querySelector(`input[name="rating"][value="${game.rating}"]`);
         if(starInput) starInput.checked = true;
-        
-        document.getElementById('add-modal').style.display = 'flex';
+        document.getElementById('add-history-modal').style.display = 'flex';
     }
 
-    function closeModal(event) {
-        if(event.target === document.getElementById('add-modal')) {
-            document.getElementById('add-modal').style.display = 'none';
-        }
-    }
-
-    // ✨ 추가 및 수정 통합 저장 함수
-    function saveGame() {
+    function saveHistoryGame() {
         const date = document.getElementById('g-date').value;
         const title = document.getElementById('g-title').value.trim();
         const loc = document.getElementById('g-loc').value.trim();
         const memo = document.getElementById('g-memo').value.trim();
         const rating = parseInt(document.querySelector('input[name="rating"]:checked').value);
 
-        if(!date || !title || !loc) {
-            alert("필수 정보(날짜, 이름, 장소)를 모두 입력해주세요!");
-            return;
-        }
+        if(!date || !title || !loc) { alert("날짜, 이름, 장소는 필수 입력입니다!"); return; }
 
-        if (editTargetId) {
-            // 수정 모드일 때
-            const gameIndex = games.findIndex(g => g.id === editTargetId);
-            if (gameIndex > -1) {
-                games[gameIndex] = { ...games[gameIndex], date: date, title: title, location: loc, rating: rating, memo: memo };
-            }
+        if (editHistoryId) {
+            const index = games.findIndex(g => g.id === editHistoryId);
+            if (index > -1) games[index] = { ...games[index], date, title, location: loc, rating, memo };
         } else {
-            // 신규 등록 모드일 때
-            const newGame = {
-                id: Date.now(),
-                date: date,
-                title: title,
-                location: loc,
-                rating: rating,
-                memo: memo
-            };
-            games.push(newGame);
+            games.push({ id: Date.now(), date, title, location: loc, rating, memo });
         }
-
         localStorage.setItem('boardgames_data', JSON.stringify(games));
-        document.getElementById('add-modal').style.display = 'none';
-        
+        document.getElementById('add-history-modal').style.display = 'none';
         selectDate(date);
     }
 
-    function deleteGame(id) {
+    function deleteHistoryGame(id) {
         if(confirm("이 기록을 삭제할까요?")) {
             games = games.filter(g => g.id !== id);
             localStorage.setItem('boardgames_data', JSON.stringify(games));
-            renderCalendar();
-            renderGames();
+            renderCalendarStrip();
+            renderHistoryGames();
         }
+    }
+
+
+    // === 5. 위시리스트 (Wishlist) 로직 ===
+    function renderWishlistGames() {
+        const listDiv = document.getElementById('wish-list-container');
+        listDiv.innerHTML = '';
+        
+        if (wishlists.length === 0) {
+            listDiv.innerHTML = `<div class="empty-state">위시리스트가 비어있어요!<br>해보고 싶은 게임을 추가해보세요.</div>`;
+            return;
+        }
+
+        wishlists.forEach(w => {
+            let memoHtml = w.memo ? `<div class="g-memo" style="background:#fff3e0; border-color:#ffe0b2;">💡 ${w.memo.replace(/\n/g, '<br>')}</div>` : '';
+            let html = `
+            <div class="game-card" style="border-color:#ffe0b2;">
+                <div class="action-btns">
+                    <button class="btn-edit" style="background:#ffe0b2; color:#e65100;" onclick="openWishEditModal(${w.id})">수정</button>
+                    <button class="btn-delete" onclick="deleteWishGame(${w.id})">삭제</button>
+                </div>
+                <div class="g-title" style="color:#ff9800; font-size:18px;">${w.title}</div>
+                ${memoHtml}
+            </div>`;
+            listDiv.insertAdjacentHTML('beforeend', html);
+        });
+    }
+
+    function openWishAddModal() {
+        editWishId = null; 
+        document.getElementById('wish-modal-title').innerText = '위시리스트 추가!';
+        document.getElementById('btn-wish-save').innerText = '저장하기';
+        document.getElementById('w-title').value = '';
+        document.getElementById('w-memo').value = '';
+        document.getElementById('add-wish-modal').style.display = 'flex';
+    }
+
+    function openWishEditModal(id) {
+        const wGame = wishlists.find(w => w.id === id);
+        if(!wGame) return;
+        editWishId = id; 
+        document.getElementById('wish-modal-title').innerText = '위시리스트 수정';
+        document.getElementById('btn-wish-save').innerText = '수정 완료';
+        document.getElementById('w-title').value = wGame.title;
+        document.getElementById('w-memo').value = wGame.memo || '';
+        document.getElementById('add-wish-modal').style.display = 'flex';
+    }
+
+    function saveWishGame() {
+        const title = document.getElementById('w-title').value.trim();
+        const memo = document.getElementById('w-memo').value.trim();
+
+        if(!title) { alert("해보고 싶은 게임 이름을 입력해주세요!"); return; }
+
+        if (editWishId) {
+            const index = wishlists.findIndex(w => w.id === editWishId);
+            if (index > -1) wishlists[index] = { ...wishlists[index], title, memo };
+        } else {
+            wishlists.push({ id: Date.now(), title, memo });
+        }
+        localStorage.setItem('boardgames_wish_data', JSON.stringify(wishlists));
+        document.getElementById('add-wish-modal').style.display = 'none';
+        renderWishlistGames();
+    }
+
+    function deleteWishGame(id) {
+        if(confirm("위시리스트에서 삭제할까요?")) {
+            wishlists = wishlists.filter(w => w.id !== id);
+            localStorage.setItem('boardgames_wish_data', JSON.stringify(wishlists));
+            renderWishlistGames();
+        }
+    }
+
+    // 모달 공통 닫기
+    function closeModal(event, id) {
+        if(event.target.id === id) { document.getElementById(id).style.display = 'none'; }
     }
 </script>
 
