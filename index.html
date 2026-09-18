@@ -9,9 +9,9 @@
     
     <style>
         :root { 
-            --primary: #2196F3; /* 게임 제목용 쨍한 블루 */
-            --header-bg: #5c6bc0; /* 캘린더 배경용 네이비/퍼플톤 */
-            --bg-color: #f0f8fc; /* 전체 배경 하늘색톤 */
+            --primary: #2196F3; 
+            --header-bg: #5c6bc0; 
+            --bg-color: #f0f8fc; 
             --text-main: #333333; 
             --text-sub: #888888; 
             --star-color: #fdd835;
@@ -26,7 +26,6 @@
             display: flex; flex-direction: column;
         }
 
-        /* ✨ 1. 상단 고정 캘린더 네비게이션 영역 */
         .calendar-header {
             background-color: var(--header-bg);
             padding: 20px 10px;
@@ -51,7 +50,7 @@
             -webkit-overflow-scrolling: touch;
             align-items: center;
         }
-        .date-strip::-webkit-scrollbar { display: none; } /* 스크롤바 숨김 */
+        .date-strip::-webkit-scrollbar { display: none; } 
         
         .date-card {
             background: rgba(255, 255, 255, 0.2);
@@ -75,7 +74,6 @@
         .date-card .date { font-size: 18px; font-weight: 900; }
         .date-card.active .day { color: #555; }
         
-        /* 날짜 밑에 노란색 게임 개수 뱃지 (레퍼런스 이미지 반영) */
         .game-count-badge {
             position: absolute;
             bottom: -8px;
@@ -88,9 +86,8 @@
             border: 2px solid var(--header-bg);
         }
 
-        /* 📋 메인 보드게임 리스트 영역 */
         .main-content {
-            padding: 20px 20px 100px 20px; /* 플로팅 버튼에 안 가려지게 하단 여백 넉넉히 */
+            padding: 20px 20px 100px 20px; 
             flex: 1;
             overflow-y: auto;
         }
@@ -124,31 +121,49 @@
         .stars { color: #e0e0e0; font-size: 20px; letter-spacing: 2px; }
         .stars .filled { color: var(--star-color); }
         
-        .btn-delete {
+        /* ✨ 수정/삭제 버튼 그룹 스타일링 */
+        .action-btns {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: #ffcdd2;
-            color: #c62828;
+            display: flex;
+            gap: 6px;
+        }
+        .btn-edit, .btn-delete {
             border: none;
             padding: 4px 12px;
             border-radius: 12px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-edit { background: #e3f2fd; color: #1976d2; }
+        .btn-delete { background: #ffcdd2; color: #c62828; }
+        .btn-edit:hover { background: #bbdefb; }
+        .btn-delete:hover { background: #ef9a9a; }
+
+        /* ✨ 카드 내 메모 스타일 */
+        .g-memo { 
+            background: #f9f9f9; 
+            padding: 12px; 
+            border-radius: 8px; 
+            font-size: 13px; 
+            color: #555; 
+            margin-top: 15px; 
+            line-height: 1.5; 
+            font-weight: bold;
+            border: 1px solid #f0f0f0;
         }
 
         .empty-state { text-align: center; padding: 50px 0; color: #888; font-weight: bold; }
 
-        /* ✨ 2. 반투명 플로팅 팝업 추가 버튼 (과장님 특별 요청!) */
         .fab-add { 
             position: fixed; 
             bottom: 30px; 
             left: 50%; 
             transform: translateX(-50%); 
-            /* 은은하게 뒤가 비치는 반투명 네이비 컬러 */
             background: rgba(40, 53, 147, 0.85); 
-            /* 유리처럼 흐리게 비치는 효과 */
             backdrop-filter: blur(6px); 
             -webkit-backdrop-filter: blur(6px);
             color: white; 
@@ -164,11 +179,10 @@
             align-items: center; 
             gap: 8px; 
             white-space: nowrap;
-            z-index: 100; /* 무조건 제일 위에 뜨도록 */
+            z-index: 100;
         }
         .fab-add:hover { background: rgba(40, 53, 147, 0.95); transform: translateX(-50%) scale(1.05); }
 
-        /* ✨ 3. 카드 추가 팝업(모달) 영역 */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; position: relative; animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -177,10 +191,10 @@
         .modal-title { margin-top: 0; color: var(--header-bg); font-weight: 900; margin-bottom: 20px; text-align: center;}
         
         .input-box { margin-bottom: 15px; }
-        .input-box input { width: 100%; background: #f5f7f9; border: 1px solid #eef0f2; border-radius: 12px; padding: 14px 15px; font-size: 15px; font-weight: bold; outline: none;}
-        .input-box input:focus { border-color: var(--primary); background: white; }
+        .input-box input, .input-box textarea { width: 100%; background: #f5f7f9; border: 1px solid #eef0f2; border-radius: 12px; padding: 14px 15px; font-size: 14px; font-weight: bold; outline: none; font-family: inherit;}
+        .input-box input:focus, .input-box textarea:focus { border-color: var(--primary); background: white; }
+        .input-box textarea { resize: none; height: 80px; } /* 메모용 높이 설정 */
         
-        /* 별점 입력 라디오 버튼 숨김 처리 및 스타일링 */
         .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 5px; margin-bottom: 20px; }
         .star-rating input { display: none; }
         .star-rating label { font-size: 35px; color: #e0e0e0; cursor: pointer; transition: 0.2s; }
@@ -193,8 +207,6 @@
 <body>
 
 <div class="app-container">
-    
-    <!-- ✨ 상단 고정 네비게이션 캘린더 -->
     <div class="calendar-header">
         <div class="cal-month-title" id="cal-month-display">2026.09</div>
         <div class="date-strip" id="date-strip-container">
@@ -202,7 +214,6 @@
         </div>
     </div>
 
-    <!-- 📋 메인 컨텐츠 영역 -->
     <div class="main-content">
         <div class="page-title">
             <span style="color:#2196F3;">💙</span> 우리의 보드게임 추억
@@ -212,17 +223,16 @@
         </div>
     </div>
 
-    <!-- ✨ 하단 반투명 팝업 추가 버튼 (뒤에 글씨가 비침) -->
     <button class="fab-add" onclick="openAddModal()">
         <span style="font-size: 18px;">📝</span> <span>뭐 하고 싶어?</span>
     </button>
 </div>
 
-<!-- ✨ 카드 추가 팝업 (모달) -->
+<!-- ✨ 카드 추가 및 수정 팝업 (모달) -->
 <div id="add-modal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="document.getElementById('add-modal').style.display='none'">&times;</button>
-        <h2 class="modal-title">새로운 보드게임 기록!</h2>
+        <h2 class="modal-title" id="modal-title-text">새로운 보드게임 기록!</h2>
         
         <div class="input-box">
             <input type="date" id="g-date" required>
@@ -234,6 +244,11 @@
             <input type="text" id="g-loc" placeholder="장소 (예: 모란 히어로)" required>
         </div>
         
+        <!-- ✨ 메모 입력 영역 추가 -->
+        <div class="input-box">
+            <textarea id="g-memo" placeholder="이 날의 기억을 짧게 남겨볼까? (선택)"></textarea>
+        </div>
+        
         <div style="text-align: center; font-size: 13px; color: #888; font-weight: bold; margin-bottom: 5px;">우리의 평점은?</div>
         <div class="star-rating">
             <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
@@ -243,46 +258,42 @@
             <input type="radio" id="star1" name="rating" value="1" checked><label for="star1">★</label>
         </div>
 
-        <button class="btn-submit" onclick="saveGame()">저장하기</button>
+        <button class="btn-submit" id="btn-save-submit" onclick="saveGame()">저장하기</button>
     </div>
 </div>
 
 <script>
-    // 임시 초기 데이터 (과장님 사진에 있는 데이터들)
     let games = [
-        { id: 1, date: '2026-09-17', title: '스컬킹', location: '모란 히어로', rating: 5 },
-        { id: 2, date: '2026-09-17', title: '더 게임', location: '모란 히어로', rating: 4 },
-        { id: 3, date: '2026-09-17', title: '더 마인드', location: '모란 히어로', rating: 5 },
-        { id: 4, date: '2026-09-17', title: '스파이시', location: '모란 히어로', rating: 4 },
-        { id: 5, date: '2026-09-13', title: '의자 사다리 세우기', location: '야탑 홈즈앤루팡', rating: 3 },
-        { id: 6, date: '2026-09-13', title: '요트다이스', location: '야탑 홈즈앤루팡', rating: 4 },
-        { id: 7, date: '2026-09-13', title: '캐스캐디아', location: '야탑 홈즈앤루팡', rating: 3 },
-        { id: 8, date: '2026-08-06', title: '코드네임 듀엣', location: '서현 오즈보드게임', rating: 5 }
+        { id: 1, date: '2026-09-17', title: '스컬킹', location: '모란 히어로', rating: 5, memo: '민지가 0승 선언하고 다 틀린 전설의 날 ㅋㅋㅋ' },
+        { id: 2, date: '2026-09-17', title: '더 게임', location: '모란 히어로', rating: 4, memo: '' },
+        { id: 3, date: '2026-09-17', title: '더 마인드', location: '모란 히어로', rating: 5, memo: '눈빛으로 텔레파시 완벽하게 통함 😎' },
+        { id: 4, date: '2026-09-17', title: '스파이시', location: '모란 히어로', rating: 4, memo: '' },
+        { id: 5, date: '2026-09-13', title: '의자 사다리 세우기', location: '야탑 홈즈앤루팡', rating: 3, memo: '' },
+        { id: 6, date: '2026-09-13', title: '요트다이스', location: '야탑 홈즈앤루팡', rating: 4, memo: '' },
+        { id: 7, date: '2026-09-13', title: '캐스캐디아', location: '야탑 홈즈앤루팡', rating: 3, memo: '' },
+        { id: 8, date: '2026-08-06', title: '코드네임 듀엣', location: '서현 오즈보드게임', rating: 5, memo: '' }
     ];
 
-    // localStorage 연동 (데이터가 있으면 덮어쓰기)
     const savedGames = localStorage.getItem('boardgames_data');
     if (savedGames) {
         games = JSON.parse(savedGames);
     }
 
-    // 오늘 날짜 및 선택된 날짜 관리
-    const today = new Date('2026-09-18'); // 현재 컨텍스트 시간에 맞춤
-    let selectedDateStr = '2026-09-17'; // 기본 선택값 (데이터가 많은 날짜)
+    const today = new Date('2026-09-18');
+    let selectedDateStr = '2026-09-17'; 
+    let editTargetId = null; // ✨ 수정할 게임의 ID를 기억하는 변수
 
     window.onload = () => {
         renderCalendar();
         renderGames();
     };
 
-    // ✨ 캘린더 네비게이션 렌더링 함수
     function renderCalendar() {
         const strip = document.getElementById('date-strip-container');
         strip.innerHTML = '';
         
         const daysArr = ['일','월','화','수','목','금','토'];
         
-        // 9월 10일부터 9월 20일까지 렌더링 (예시)
         let currDate = new Date('2026-09-10');
         const endDate = new Date('2026-09-20');
 
@@ -295,7 +306,6 @@
             let dayName = daysArr[currDate.getDay()];
             let activeCls = (dateStr === selectedDateStr) ? 'active' : '';
             
-            // 해당 날짜에 게임이 몇 개 있는지 계산
             let gameCount = games.filter(g => g.date === dateStr).length;
             let badgeHtml = gameCount > 0 ? `<div class="game-count-badge">${gameCount}</div>` : '';
 
@@ -310,25 +320,21 @@
             currDate.setDate(currDate.getDate() + 1);
         }
 
-        // 상단 월 표시 업데이트
         const selObj = new Date(selectedDateStr);
         document.getElementById('cal-month-display').innerText = `${selObj.getFullYear()}.${String(selObj.getMonth()+1).padStart(2, '0')}`;
         
-        // 선택된 카드로 스크롤 자동 이동
         setTimeout(() => {
             const activeCard = document.getElementById(`cal-${selectedDateStr}`);
             if(activeCard) activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
         }, 100);
     }
 
-    // 날짜 선택 시 뎁스(필터링) 이동
     function selectDate(dateStr) {
         selectedDateStr = dateStr;
-        renderCalendar(); // 달력 UI 업데이트 (active 클래스 및 배지)
-        renderGames();    // 해당 날짜 게임 렌더링
+        renderCalendar(); 
+        renderGames();    
     }
 
-    // 📋 보드게임 카드 렌더링 함수
     function renderGames() {
         const listDiv = document.getElementById('game-list-container');
         listDiv.innerHTML = '';
@@ -341,30 +347,65 @@
         }
 
         filteredGames.forEach(g => {
-            // 별점 HTML 생성
             let starsHtml = '';
             for(let i=1; i<=5; i++) {
                 starsHtml += `<span class="${i <= g.rating ? 'filled' : ''}">★</span>`;
             }
 
+            // ✨ 메모가 있으면 노출하도록 처리
+            let memoHtml = g.memo ? `<div class="g-memo">📝 ${g.memo.replace(/\n/g, '<br>')}</div>` : '';
+
             let html = `
             <div class="game-card">
-                <button class="btn-delete" onclick="deleteGame(${g.id})">삭제</button>
+                <!-- ✨ 수정 및 삭제 버튼 배치 -->
+                <div class="action-btns">
+                    <button class="btn-edit" onclick="openEditModal(${g.id})">수정</button>
+                    <button class="btn-delete" onclick="deleteGame(${g.id})">삭제</button>
+                </div>
+                
                 <div class="g-date">${g.date}</div>
                 <div class="g-title">${g.title}</div>
                 <div class="g-loc"><span>📍</span> ${g.location}</div>
                 <div class="stars">${starsHtml}</div>
+                ${memoHtml}
             </div>`;
             listDiv.insertAdjacentHTML('beforeend', html);
         });
     }
 
-    // 모달(팝업) 제어 함수
+    // ✨ 새 게임 추가 모달창 열기
     function openAddModal() {
+        editTargetId = null; // 신규 추가 모드
+        document.getElementById('modal-title-text').innerText = '새로운 보드게임 기록!';
+        document.getElementById('btn-save-submit').innerText = '저장하기';
+        
         document.getElementById('g-date').value = selectedDateStr;
         document.getElementById('g-title').value = '';
         document.getElementById('g-loc').value = '';
-        document.getElementById('star5').checked = true; // 기본 5점
+        document.getElementById('g-memo').value = '';
+        document.getElementById('star5').checked = true; 
+        
+        document.getElementById('add-modal').style.display = 'flex';
+    }
+
+    // ✨ 기존 게임 수정 모달창 열기
+    function openEditModal(id) {
+        const game = games.find(g => g.id === id);
+        if(!game) return;
+        
+        editTargetId = id; // 수정 모드
+        document.getElementById('modal-title-text').innerText = '보드게임 기록 수정';
+        document.getElementById('btn-save-submit').innerText = '수정 완료';
+        
+        document.getElementById('g-date').value = game.date;
+        document.getElementById('g-title').value = game.title;
+        document.getElementById('g-loc').value = game.location;
+        document.getElementById('g-memo').value = game.memo || '';
+        
+        // 해당 별점에 체크하기
+        const starInput = document.querySelector(`input[name="rating"][value="${game.rating}"]`);
+        if(starInput) starInput.checked = true;
+        
         document.getElementById('add-modal').style.display = 'flex';
     }
 
@@ -374,42 +415,48 @@
         }
     }
 
-    // 게임 저장 함수
+    // ✨ 추가 및 수정 통합 저장 함수
     function saveGame() {
         const date = document.getElementById('g-date').value;
         const title = document.getElementById('g-title').value.trim();
         const loc = document.getElementById('g-loc').value.trim();
+        const memo = document.getElementById('g-memo').value.trim();
         const rating = parseInt(document.querySelector('input[name="rating"]:checked').value);
 
         if(!date || !title || !loc) {
-            alert("정보를 모두 입력해주세요!");
+            alert("필수 정보(날짜, 이름, 장소)를 모두 입력해주세요!");
             return;
         }
 
-        const newGame = {
-            id: Date.now(),
-            date: date,
-            title: title,
-            location: loc,
-            rating: rating
-        };
+        if (editTargetId) {
+            // 수정 모드일 때
+            const gameIndex = games.findIndex(g => g.id === editTargetId);
+            if (gameIndex > -1) {
+                games[gameIndex] = { ...games[gameIndex], date: date, title: title, location: loc, rating: rating, memo: memo };
+            }
+        } else {
+            // 신규 등록 모드일 때
+            const newGame = {
+                id: Date.now(),
+                date: date,
+                title: title,
+                location: loc,
+                rating: rating,
+                memo: memo
+            };
+            games.push(newGame);
+        }
 
-        games.push(newGame);
         localStorage.setItem('boardgames_data', JSON.stringify(games));
-        
         document.getElementById('add-modal').style.display = 'none';
         
-        // 추가한 날짜로 자동 이동해서 보여주기
         selectDate(date);
     }
 
-    // 게임 삭제 함수
     function deleteGame(id) {
         if(confirm("이 기록을 삭제할까요?")) {
             games = games.filter(g => g.id !== id);
             localStorage.setItem('boardgames_data', JSON.stringify(games));
-            
-            // 삭제 후 현재 날짜 리렌더링
             renderCalendar();
             renderGames();
         }
