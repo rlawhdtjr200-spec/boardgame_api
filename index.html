@@ -214,7 +214,26 @@
 
         .btn-submit { width: 100%; background: var(--header-bg); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(92, 107, 192, 0.3);}
         
+        /* ✨ 팝업 달력(Flatpickr) 내부에 게임 횟수 뱃지 띄우기 위한 스타일 */
         .flatpickr-calendar { border-radius: 20px !important; border: none !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; padding: 10px !important; font-family: 'Malgun Gothic', sans-serif !important; z-index: 10005 !important; }
+        .flatpickr-day { position: relative !important; } /* 뱃지 기준점 */
+        .fp-game-badge {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: #ffc107;
+            color: #333;
+            font-size: 9px;
+            font-weight: 900;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            pointer-events: none; /* 클릭 방해 금지 */
+        }
     </style>
 </head>
 <body>
@@ -228,12 +247,10 @@
 
     <div id="view-history">
         <div class="calendar-header">
-            <!-- ✨ 핵심 수정: position을 relative로 감싸고, 그 안에서 인풋을 투명하게 숨깁니다. -->
             <div style="position: relative; display: inline-block;">
                 <div class="cal-month-title" id="cal-month-display" onclick="openMonthPicker()">
                     2026.09 <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">calendar_month</span>
                 </div>
-                <!-- 화면 바깥으로 날리지 않고, 글자 바로 뒤에 1픽셀로 안보이게 고정! 이제 달력이 정상 위치에 뜹니다! -->
                 <input type="text" id="hidden-month-picker" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:1px; height:1px; padding:0; border:none; opacity:0; pointer-events:none;">
             </div>
             
@@ -311,7 +328,7 @@
     let selectedDateStr = '2026-09-17'; 
     let editHistoryId = null;
     let editWishId = null;
-    let fpMonth; // 달력 객체
+    let fpMonth;
 
     let games = [
         { id: 1, date: '2026-09-17', title: '스컬킹', location: '모란 히어로', rating: 5, memo: '민지가 0승 선언하고 다 틀린 전설의 날 ㅋㅋㅋ' },
@@ -331,13 +348,30 @@
     if (savedWish) wishlists = JSON.parse(savedWish);
 
     window.onload = () => {
-        // ✨ HTML이 렌더링된 후 달력(Flatpickr)을 단단하게 부착합니다!
+        // ✨ 월간 달력(Flatpickr) 초기화 시 날짜 뱃지 생성 로직(onDayCreate) 추가
         fpMonth = flatpickr("#hidden-month-picker", {
             locale: "ko",
-            disableMobile: true, // 모바일 네이티브 이슈 완벽 방어
+            disableMobile: true,
             onChange: function(selectedDates, dateStr, instance) {
                 if(selectedDates.length > 0) {
                     selectDate(dateStr);
+                }
+            },
+            // 달력의 날짜 칸이 하나씩 그려질 때마다 호출되는 마법의 함수!
+            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                // 달력 셀(dayElem)이 가진 날짜 정보를 가져옵니다
+                let d = dayElem.dateObj;
+                let yyyy = d.getFullYear();
+                let mm = String(d.getMonth() + 1).padStart(2, '0');
+                let dd = String(d.getDate()).padStart(2, '0');
+                let dateString = `${yyyy}-${mm}-${dd}`;
+                
+                // 우리 게임 데이터에서 해당 날짜에 게임이 몇 개 있는지 찾습니다
+                let count = games.filter(g => g.date === dateString).length;
+                
+                // 게임이 1개 이상이면 노란색 동그라미 뱃지를 추가합니다!
+                if (count > 0) {
+                    dayElem.innerHTML += `<span class="fp-game-badge">${count}</span>`;
                 }
             }
         });
@@ -349,8 +383,10 @@
 
     function openMonthPicker() {
         if(fpMonth) {
+            // ✨ 달력 팝업을 열 때마다 최신 게임 개수를 다시 계산해서 그리도록 명령!
+            fpMonth.redraw();
             fpMonth.setDate(selectedDateStr);
-            fpMonth.open(); // 이제 정상적인 위치에서 뜹니다!
+            fpMonth.open(); 
         }
     }
 
@@ -511,6 +547,10 @@
             games.push({ id: Date.now(), date, title, location: loc, rating, memo });
         }
         localStorage.setItem('boardgames_data', JSON.stringify(games));
+        
+        // 데이터가 변경되었으므로 월간 달력의 뱃지도 최신화시킵니다!
+        if (fpMonth) fpMonth.redraw();
+
         document.getElementById('add-history-modal').style.display = 'none';
         selectDate(date);
     }
@@ -519,6 +559,10 @@
         if(confirm("이 기록을 삭제할까요?")) {
             games = games.filter(g => g.id !== id);
             localStorage.setItem('boardgames_data', JSON.stringify(games));
+            
+            // 데이터가 변경되었으므로 월간 달력의 뱃지도 최신화시킵니다!
+            if (fpMonth) fpMonth.redraw();
+
             renderCalendarStrip();
             renderHistoryGames();
         }
