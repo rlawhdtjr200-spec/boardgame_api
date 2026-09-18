@@ -27,7 +27,6 @@
             display: flex; flex-direction: column;
         }
 
-        /* ✨ 최상단 탭(Tab) 메뉴 스타일링 */
         .top-tabs {
             display: flex;
             background: var(--header-bg);
@@ -54,7 +53,6 @@
             border-bottom: 4px solid white;
         }
 
-        /* ✨ 캘린더 네비게이션 영역 */
         .calendar-header {
             background-color: var(--header-bg);
             padding: 15px 10px 20px 10px;
@@ -62,7 +60,7 @@
             text-align: center;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             position: sticky;
-            top: 55px; /* 탭 메뉴 바로 아래 붙도록 */
+            top: 55px; 
             z-index: 50;
         }
         .cal-month-title {
@@ -77,8 +75,9 @@
             padding: 5px 15px;
             border-radius: 20px;
             transition: 0.2s;
+            background: rgba(255,255,255,0.15);
         }
-        .cal-month-title:hover { background: rgba(255,255,255,0.1); }
+        .cal-month-title:hover { background: rgba(255,255,255,0.25); }
         
         .date-strip {
             display: flex;
@@ -170,13 +169,12 @@
 
         .empty-state { text-align: center; padding: 50px 0; color: #888; font-weight: bold; }
 
-        /* ✨ 투명도를 팍 낮춘 하단 플로팅 버튼 (뒤가 훤히 비치도록 rgba 조정) */
         .fab-add { 
             position: fixed; 
             bottom: 30px; 
             left: 50%; 
             transform: translateX(-50%); 
-            background: rgba(33, 150, 243, 0.4); /* 투명도를 0.4로 대폭 낮춤 */
+            background: rgba(33, 150, 243, 0.4); 
             backdrop-filter: blur(8px); 
             -webkit-backdrop-filter: blur(8px);
             color: white; 
@@ -196,7 +194,6 @@
         }
         .fab-add:hover { background: rgba(33, 150, 243, 0.6); transform: translateX(-50%) scale(1.05); }
 
-        /* 모달 팝업 공통 스타일 */
         .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 9999; display: none; justify-content: center; align-items: center; padding: 20px; }
         .modal-content { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; position: relative; animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -217,7 +214,6 @@
 
         .btn-submit { width: 100%; background: var(--header-bg); color: white; border: none; padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 900; cursor: pointer; box-shadow: 0 4px 10px rgba(92, 107, 192, 0.3);}
         
-        /* 캘린더 팝업 예쁘게 꾸미기 */
         .flatpickr-calendar { border-radius: 20px !important; border: none !important; box-shadow: 0 10px 30px rgba(0,0,0,0.2) !important; padding: 10px !important; font-family: 'Malgun Gothic', sans-serif !important; z-index: 10005 !important; }
     </style>
 </head>
@@ -225,21 +221,21 @@
 
 <div class="app-container">
     
-    <!-- ✨ 최상단 네비게이션 탭 -->
     <div class="top-tabs">
         <button class="tab-btn active" id="tab-btn-history" onclick="switchTab('history')">🎮 플레이 기록</button>
         <button class="tab-btn" id="tab-btn-wishlist" onclick="switchTab('wishlist')">🛒 위시리스트</button>
     </div>
 
-    <!-- 🎮 [화면 1] 플레이 기록(히스토리) 뷰 -->
     <div id="view-history">
         <div class="calendar-header">
-            <!-- ✨ 클릭 시 월간 달력(Flatpickr) 팝업 열림 -->
-            <div class="cal-month-title" id="cal-month-display" onclick="openMonthPicker()">
-                2026.09 <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">calendar_month</span>
+            <!-- ✨ 핵심 수정: position을 relative로 감싸고, 그 안에서 인풋을 투명하게 숨깁니다. -->
+            <div style="position: relative; display: inline-block;">
+                <div class="cal-month-title" id="cal-month-display" onclick="openMonthPicker()">
+                    2026.09 <span class="material-symbols-outlined" style="font-size:20px; vertical-align:middle;">calendar_month</span>
+                </div>
+                <!-- 화면 바깥으로 날리지 않고, 글자 바로 뒤에 1픽셀로 안보이게 고정! 이제 달력이 정상 위치에 뜹니다! -->
+                <input type="text" id="hidden-month-picker" style="position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:1px; height:1px; padding:0; border:none; opacity:0; pointer-events:none;">
             </div>
-            <!-- 달력 팝업용 숨김 인풋 -->
-            <input type="text" id="hidden-month-picker" style="position:absolute; top:-9999px; left:-9999px; opacity:0;">
             
             <div class="date-strip" id="date-strip-container">
                 <!-- 날짜 카드 동적 생성 -->
@@ -256,7 +252,6 @@
         </div>
     </div>
 
-    <!-- 🛒 [화면 2] 위시리스트 뷰 -->
     <div id="view-wishlist" style="display:none;">
         <div class="main-content" style="padding-top: 30px;">
             <div class="page-title" style="color:#ff9800; border-bottom: 2px dashed #ffe0b2;">
@@ -268,13 +263,11 @@
         </div>
     </div>
 
-    <!-- ✨ 투명한 통합 플로팅 추가 버튼 -->
     <button class="fab-add" id="main-fab" onclick="openFabModal()">
         <span style="font-size: 18px;">📝</span> <span>기록 추가</span>
     </button>
 </div>
 
-<!-- 🎮 플레이 기록 추가/수정 모달 -->
 <div id="add-history-modal" class="modal-overlay" onclick="closeModal(event, 'add-history-modal')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="document.getElementById('add-history-modal').style.display='none'">&times;</button>
@@ -298,7 +291,6 @@
     </div>
 </div>
 
-<!-- 🛒 위시리스트 추가/수정 모달 -->
 <div id="add-wish-modal" class="modal-overlay" onclick="closeModal(event, 'add-wish-modal')">
     <div class="modal-content" onclick="event.stopPropagation()">
         <button class="modal-close" onclick="document.getElementById('add-wish-modal').style.display='none'">&times;</button>
@@ -315,11 +307,11 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
 
 <script>
-    // === 1. 상태 및 데이터 초기화 ===
-    let currentTab = 'history'; // 'history' or 'wishlist'
+    let currentTab = 'history'; 
     let selectedDateStr = '2026-09-17'; 
     let editHistoryId = null;
     let editWishId = null;
+    let fpMonth; // 달력 객체
 
     let games = [
         { id: 1, date: '2026-09-17', title: '스컬킹', location: '모란 히어로', rating: 5, memo: '민지가 0승 선언하고 다 틀린 전설의 날 ㅋㅋㅋ' },
@@ -332,20 +324,35 @@
         { id: 102, title: '테라포밍 마스', memo: '화성 개척 명작 보드게임' }
     ];
 
-    // LocalStorage 데이터 로드
     const savedGames = localStorage.getItem('boardgames_data');
     if (savedGames) games = JSON.parse(savedGames);
 
     const savedWish = localStorage.getItem('boardgames_wish_data');
     if (savedWish) wishlists = JSON.parse(savedWish);
 
-
-    // === 2. 화면 초기화 및 탭 전환 ===
     window.onload = () => {
+        // ✨ HTML이 렌더링된 후 달력(Flatpickr)을 단단하게 부착합니다!
+        fpMonth = flatpickr("#hidden-month-picker", {
+            locale: "ko",
+            disableMobile: true, // 모바일 네이티브 이슈 완벽 방어
+            onChange: function(selectedDates, dateStr, instance) {
+                if(selectedDates.length > 0) {
+                    selectDate(dateStr);
+                }
+            }
+        });
+
         renderCalendarStrip();
         renderHistoryGames();
         renderWishlistGames();
     };
+
+    function openMonthPicker() {
+        if(fpMonth) {
+            fpMonth.setDate(selectedDateStr);
+            fpMonth.open(); // 이제 정상적인 위치에서 뜹니다!
+        }
+    }
 
     function switchTab(tab) {
         currentTab = tab;
@@ -359,7 +366,6 @@
             document.getElementById('main-fab').innerHTML = '<span style="font-size: 18px;">📝</span> <span>기록 추가</span>';
             document.getElementById('main-fab').style.background = 'rgba(33, 150, 243, 0.4)';
             
-            // 탭 전환 시 선택된 날짜로 스크롤 복구
             setTimeout(() => {
                 const activeCard = document.getElementById(`cal-${selectedDateStr}`);
                 if(activeCard) activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
@@ -369,7 +375,7 @@
             document.getElementById('view-history').style.display = 'none';
             document.getElementById('view-wishlist').style.display = 'block';
             document.getElementById('main-fab').innerHTML = '<span style="font-size: 18px;">⭐</span> <span>위시 추가</span>';
-            document.getElementById('main-fab').style.background = 'rgba(255, 152, 0, 0.5)'; // 위시는 오렌지톤
+            document.getElementById('main-fab').style.background = 'rgba(255, 152, 0, 0.5)'; 
         }
     }
 
@@ -381,25 +387,6 @@
         }
     }
 
-
-    // === 3. 월간 캘린더 팝업 (Flatpickr) 설정 ===
-    let fpMonth = flatpickr("#hidden-month-picker", {
-        locale: "ko",
-        disableMobile: "true",
-        onChange: function(selectedDates, dateStr, instance) {
-            if(selectedDates.length > 0) {
-                selectDate(dateStr);
-            }
-        }
-    });
-
-    function openMonthPicker() {
-        fpMonth.setDate(selectedDateStr);
-        fpMonth.open();
-    }
-
-
-    // === 4. 플레이 기록 (History) 로직 ===
     function renderCalendarStrip() {
         const strip = document.getElementById('date-strip-container');
         strip.innerHTML = '';
@@ -407,7 +394,7 @@
         
         let selDate = new Date(selectedDateStr);
         let currDate = new Date(selDate);
-        currDate.setDate(currDate.getDate() - 25); // 앞뒤로 25일씩 여유롭게 생성
+        currDate.setDate(currDate.getDate() - 25);
         let endDate = new Date(selDate);
         endDate.setDate(endDate.getDate() + 25);
 
@@ -444,7 +431,7 @@
 
     function selectDate(dateStr) {
         selectedDateStr = dateStr;
-        renderCalendarStrip(); // 달력을 누른 날짜 중심으로 재배치
+        renderCalendarStrip(); 
         renderHistoryGames();    
     }
 
@@ -537,8 +524,6 @@
         }
     }
 
-
-    // === 5. 위시리스트 (Wishlist) 로직 ===
     function renderWishlistGames() {
         const listDiv = document.getElementById('wish-list-container');
         listDiv.innerHTML = '';
@@ -608,7 +593,6 @@
         }
     }
 
-    // 모달 공통 닫기
     function closeModal(event, id) {
         if(event.target.id === id) { document.getElementById(id).style.display = 'none'; }
     }
